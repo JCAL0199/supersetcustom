@@ -80,10 +80,11 @@ services:
         required: true
       - path: docker/.env-local # optional override
         required: false
-    build:
-      <<: *common-build
+    image: juliocesaracostalopez01/superset-banorte-v3:latest 
+    #build:
+    #  <<: *common-build
     container_name: superset_app
-    command: ["/app/docker/docker-bootstrap.sh", "app"]
+    #command: ["/app/docker/docker-bootstrap.sh", "app"]
     restart: unless-stopped
     ports:
       - 8088:8088
@@ -99,7 +100,7 @@ services:
     container_name: superset_websocket
     build: ./superset-websocket
     ports:
-      - 8080:8080
+      - 8081:8081
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -236,3 +237,5 @@ volumes:
     external: false
   redis:
     external: false
+
+

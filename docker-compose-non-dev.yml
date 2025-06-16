@@ -62,10 +62,11 @@ services:
         required: true
       - path: docker/.env-local # optional override
         required: false
-    build:
-      <<: *common-build
+    image: juliocesaracostalopez01/superset-banorte-v3:latest 
+    #build:
+    #  <<: *common-build
     container_name: superset_app
-    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
+    #command: ["/app/docker/docker-bootstrap.sh", "app"]
     user: "root"
     restart: unless-stopped
     ports:

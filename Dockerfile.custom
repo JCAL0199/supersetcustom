@@ -1,0 +1,34 @@
+FROM apache/superset:latest
+
+# Optional: Install Oracle DB driver (oracledb or cx_Oracle)
+USER root
+RUN apt-get update && apt-get install -y libaio1 unzip wget
+
+RUN mkdir -p /app/superset/static && \
+    chown superset:superset /app/superset/static
+
+
+# Si se tiene problemas con permiso para ejecutar el "paso 1 de copia de assets" comente el paso mensionado y haga lo siguiente:
+# 1- En el archivo .dockerignore elimine la line que especifique superset/static/assets
+# 2- Descomente el siguiente comando COPY --chown=superset:superset ./superset/static/assets /app/superset/static/assets
+COPY --chown=superset:superset ./superset/static/assets /app/superset/static/assets
+
+# Download and install Oracle Instant Client (basic + SDK)
+RUN apt-get update && \
+    apt-get install -y libaio1 wget unzip && \
+    mkdir -p /opt/oracle && \
+    cd /opt/oracle && \
+    wget https://download.oracle.com/otn_software/linux/instantclient/1927000/instantclient-basic-linux.x64-19.27.0.0.0dbru.zip&& \
+    unzip instantclient-basic-linux.x64-*.zip && \
+    rm instantclient-basic-linux.x64-*.zip && \
+    echo /opt/oracle/instantclient_19_27 > /etc/ld.so.conf.d/oracle-instantclient.conf && \
+    ldconfig
+    
+ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_19_27
+
+# Install Python oracle driver
+RUN pip install cx_Oracle
+
+RUN pip install oracledb psycopg2-binary
+
+USER superset
