@@ -22,7 +22,7 @@ services:
       - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
 
   superset:
-    image: juliocesaracostalopez01/superset-banorte-v3:latest #imagen custom de superset
+    image: juliocesaracostalopez01/superset-banorte-v5:latest #imagen custom de superset
     container_name: superset_app
     command: >
       bash -c "superset run -h 0.0.0.0 -p 8088"
@@ -41,6 +41,9 @@ services:
     environment:
       SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
       ENABLE_WEBSOCKETS: True
+      SUPERSET_ENABLE_PROXY_FIX: True
+      SUPERSET_WEBSERVER_ADDRESS: 0.0.0.0
+      SUPERSET_WEBSERVER_PORT: 8088
 
   superset-init:
     image: apache/superset:latest
@@ -94,7 +97,8 @@ services:
     image: apache/superset:latest
     user: "0:0"  # Ejecuta como root
     container_name: superset_worker_beat
-    command: ["celery", "beat", "--app=superset.tasks.celery_app:app", "-l", "INFO"]
+    command: >
+      bash -c "celery --app=superset.tasks.celery_app:app beat --pidfile=/tmp/celerybeat.pid -l INFO"
     restart: unless-stopped
     env_file:
       - path: docker/.env # default

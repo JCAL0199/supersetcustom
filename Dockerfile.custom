@@ -13,6 +13,8 @@ RUN mkdir -p /app/superset/static && \
 # 2- Descomente el siguiente comando COPY --chown=superset:superset ./superset/static/assets /app/superset/static/assets
 COPY --chown=superset:superset ./superset/static/assets /app/superset/static/assets
 
+COPY --chown=superset:superset superset_config.py /app/pythonpath/
+
 # Download and install Oracle Instant Client (basic + SDK)
 RUN apt-get update && \
     apt-get install -y libaio1 wget unzip && \
