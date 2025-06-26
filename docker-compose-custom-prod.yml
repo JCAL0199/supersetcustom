@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     volumes:
       - redis:/data
+    ports:
+      - "6379:6379
 
   db:
     env_file:
@@ -91,6 +93,8 @@ services:
       - ./celerybeat-schedule:/home/superset/celerybeat-schedule
     environment:
       SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+      CELERY_BROKER_URL: "redis://superset_cache:6379/0"  # Fuerza el uso de Redis
+      CELERY_RESULT_BACKEND: "redis://superset_cache:6379/0"
 
   superset-worker-beat:
     image: juliocesaracostalopez01/superset-banorte-v5:latest
