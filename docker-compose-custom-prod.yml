@@ -27,7 +27,7 @@ services:
     image: juliocesaracostalopez01/superset-banorte-v5:latest #imagen custom de superset
     container_name: superset_app
     command: >
-      bash -c "superset run -h 0.0.0.0 -p 8088 -with-threads --reload --debugger"
+      bash -c "superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger"
     ports:
       - 8088:8088
     restart: unless-stopped
