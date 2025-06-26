@@ -1,0 +1,104 @@
+services:
+  redis:
+    image: redis:7
+    container_name: superset_cache
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
+  db:
+    image: postgres:15
+    container_name: superset_db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    env_file:
+      - docker/.env
+      - docker/.env-local
+    volumes:
+      - db_home:/var/lib/postgresql/data
+      - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  superset:
+    image: juliocesaracostalopez01/superset-banorte-v5:latest
+    container_name: superset_app
+    restart: unless-stopped
+    depends_on:
+      - superset-init
+    ports:
+      - "8088:8088"
+    env_file:
+      - docker/.env
+      - docker/.env-local
+    volumes:
+      - superset_home:/app/superset_home
+    command: >
+      superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger
+    environment:
+      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+      SUPERSET_ENABLE_PROXY_FIX: "True"
+      SUPERSET_WEBSERVER_ADDRESS: "0.0.0.0"
+      SUPERSET_WEBSERVER_PORT: "8088"
+
+  superset-init:
+    image: apache/superset:latest
+    container_name: superset_init
+    depends_on:
+      - db
+      - redis
+    restart: on-failure
+    env_file:
+      - docker/.env
+      - docker/.env-local
+    volumes:
+      - superset_home:/app/superset_home
+    command: >
+      sh -c "
+      superset db upgrade &&
+      superset fab create-admin \
+        --username admin \
+        --firstname Admin \
+        --lastname User \
+        --email admin@superset.com \
+        --password admin &&
+      superset init"
+
+  superset-worker:
+    image: apache/superset:latest
+    container_name: superset_worker
+    restart: unless-stopped
+    depends_on:
+      - superset
+    env_file:
+      - docker/.env
+      - docker/.env-local
+    volumes:
+      - superset_home:/app/superset_home
+    command: >
+      celery --app=superset.tasks.celery_app:app worker --pool=prefork -O fair -c 4
+    environment:
+      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+
+  superset-worker-beat:
+    image: apache/superset:latest
+    container_name: superset_worker_beat
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      - superset-worker
+    env_file:
+      - docker/.env
+      - docker/.env-local
+    volumes:
+      - superset_home:/app/superset_home
+      - ./celerybeat:/var/lib/celery
+    command: >
+      celery --app=superset.tasks.celery_app:app beat --pidfile=/tmp/celerybeat.pid -l INFO
+    environment:
+      SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
+      CELERYBEAT_SCHEDULE_FILENAME: /var/lib/celery/celerybeat-schedule
+
+volumes:
+  superset_home:
+  db_home:
+  redis:
