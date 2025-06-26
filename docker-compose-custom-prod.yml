@@ -25,7 +25,7 @@ services:
     image: juliocesaracostalopez01/superset-banorte-v5:latest #imagen custom de superset
     container_name: superset_app
     command: >
-      bash -c "superset run -h 0.0.0.0 -p 8088"
+      bash -c "superset run -h 0.0.0.0 -p 8088 -with-threads --reload --debugger"
     ports:
       - 8088:8088
     restart: unless-stopped
@@ -40,7 +40,6 @@ services:
       - superset_home:/app/superset_home
     environment:
       SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
-      ENABLE_WEBSOCKETS: True
       SUPERSET_ENABLE_PROXY_FIX: True
       SUPERSET_WEBSERVER_ADDRESS: 0.0.0.0
       SUPERSET_WEBSERVER_PORT: 8088
