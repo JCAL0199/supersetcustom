@@ -80,7 +80,7 @@ services:
         required: true
       - path: docker/.env-local # optional override
         required: false
-    image: juliocesaracostalopez01/superset-banorte-v3:latest 
+    image: juliocesaracostalopez01/superset-banorte-v5:latest 
     #build:
     #  <<: *common-build
     container_name: superset_app
