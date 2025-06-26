@@ -68,7 +68,7 @@ services:
     volumes: *superset-volumes
 
   superset-init:
-    image: *superset-image
+    image: juliocesaracostalopez01/superset-banorte-v5:latest
     container_name: superset_init
     command: ["/app/docker/docker-init.sh"]
     env_file:
@@ -83,7 +83,7 @@ services:
       disable: true
 
   superset-worker:
-    image: *superset-image
+    image: juliocesaracostalopez01/superset-banorte-v5:latest
     container_name: superset_worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file:
@@ -103,7 +103,7 @@ services:
         ]
 
   superset-worker-beat:
-    image: *superset-image
+    image: juliocesaracostalopez01/superset-banorte-v5:latest
     container_name: superset_worker_beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
     env_file:
