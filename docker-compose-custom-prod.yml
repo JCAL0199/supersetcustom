@@ -24,7 +24,7 @@ services:
       - ./docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
 
   superset:
-    image: juliocesaracostalopez01/superset-banorte-v3:latest #imagen custom de superset
+    image: juliocesaracostalopez01/superset-banorte-v6:latest #imagen custom de superset
     container_name: superset_app
     command: >
       bash -c "superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger"
@@ -47,7 +47,7 @@ services:
       SUPERSET_WEBSERVER_PORT: 8088
 
   superset-init:
-    image: juliocesaracostalopez01/superset-banorte-v3:latest
+    image: juliocesaracostalopez01/superset-banorte-v6:latest
     container_name: superset_init
     command: >
       sh -c "sleep 10 &&
@@ -75,7 +75,7 @@ services:
       SUPERSET_LOG_LEVEL: "${SUPERSET_LOG_LEVEL:-info}"
 
   superset-worker:
-    image: juliocesaracostalopez01/superset-banorte-v3:latest
+    image: juliocesaracostalopez01/superset-banorte-v6:latest
     container_name: superset_worker
     command: >
       bash -c "celery --app=superset.tasks.celery_app:app worker --pool=prefork -O fair -c 4"
@@ -97,7 +97,7 @@ services:
       CELERY_RESULT_BACKEND: "redis://superset_cache:6379/0"
 
   superset-worker-beat:
-    image: juliocesaracostalopez01/superset-banorte-v3:latest
+    image: juliocesaracostalopez01/superset-banorte-v6:latest
     user: "0:0"  # Ejecuta como root
     container_name: superset_worker_beat
     command: >
