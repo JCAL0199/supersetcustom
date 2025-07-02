@@ -1,0 +1,21 @@
+image:
+  repository: juliocesaracostalopez01/superset-banortev7
+  tag: latest
+  pullPolicy: Always
+
+extraSecretEnv:
+  SUPERSET_SECRET_KEY:
+    secretKeyRef:
+      name: superset-secrets
+      key: secret-key
+
+postgresql:
+  enabled: true
+  postgresqlPassword:
+    secretKeyRef:
+      name: superset-secrets
+      key: postgres-password
+
+init:
+  enabled: true
+  envFromSecret: superset-secrets
