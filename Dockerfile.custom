@@ -1,4 +1,4 @@
-FROM apache/superset:3.1.2
+FROM apache/superset:4.1.2
 
 # Optional: Install Oracle DB driver (oracledb or cx_Oracle)
 USER root
