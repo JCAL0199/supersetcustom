@@ -123,6 +123,13 @@ const RowLevelSecurityList = lazy(
     ),
 );
 
+const RedirectToNewDashboard = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "RedirectToNewDashboard" */ 'src/pages/RedirectToNewDashboard'
+    ),
+);
+
 type Routes = {
   path: string;
   Component: ComponentType;
@@ -131,6 +138,10 @@ type Routes = {
 }[];
 
 export const routes: Routes = [
+  {
+    path: '/dashboard/new/',
+    Component: RedirectToNewDashboard,
+  },
   {
     path: '/superset/welcome/',
     Component: Home,

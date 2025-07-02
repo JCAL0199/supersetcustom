@@ -4,14 +4,14 @@ FROM apache/superset:3.1.2
 USER root
 RUN apt-get update && apt-get install -y libaio1 unzip wget
 
-#RUN mkdir -p /app/superset/static && \
-#    chown superset:superset /app/superset/static
+RUN mkdir -p /app/superset/static && \
+    chown superset:superset /app/superset/static
 
 
 # Si se tiene problemas con permiso para ejecutar el "paso 1 de copia de assets" comente el paso mensionado y haga lo siguiente:
 # 1- En el archivo .dockerignore elimine la line que especifique superset/static/assets
 # 2- Descomente el siguiente comando COPY --chown=superset:superset ./superset/static/assets/images /app/superset/static/assets/images
-#COPY --chown=superset:superset ./superset/static/assets/images /app/superset/static/assets/images
+COPY --chown=superset:superset ./superset/static/assets /app/superset/static/assets
 
 COPY --chown=superset:superset superset_config.py /app/pythonpath/
 
