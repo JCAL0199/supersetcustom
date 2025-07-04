@@ -1,0 +1,84 @@
+version: 1.0.0
+
+datasets:
+  - database: your_postgres_connection_name
+    schema: public
+    table_name: langsmith_runs
+    dataset_name: LangSmith Runs
+    columns:
+      - name: start_time
+        is_dttm: true
+      - name: end_time
+        is_dttm: true
+      - name: run_id
+      - name: name
+      - name: status
+      - name: run_type
+      - name: latency_s
+      - name: parent_run_id
+    metrics:
+      - metric_name: total_runs
+        expression: COUNT(run_id)
+      - metric_name: avg_latency_s
+        expression: AVG(latency_s)
+      - metric_name: max_latency_s
+        expression: MAX(latency_s)
+      - metric_name: min_latency_s
+        expression: MIN(latency_s)
+      - metric_name: high_latency_runs
+        expression: COUNT(*) FILTER (WHERE latency_s > 2)
+
+charts:
+  - chart_name: LangSmith Runs Over Time
+    viz_type: line
+    dataset: LangSmith Runs
+    params:
+      metrics:
+        - total_runs
+      granularity_sqla: start_time
+      time_grain_sqla: P1D
+      time_range: No filter
+      groupby: []
+  - chart_name: Average Latency by Run Type
+    viz_type: bar
+    dataset: LangSmith Runs
+    params:
+      metrics:
+        - avg_latency_s
+      groupby:
+        - run_type
+      time_range: No filter
+  - chart_name: Run Latency Distribution
+    viz_type: histogram
+    dataset: LangSmith Runs
+    params:
+      column: latency_s
+      bins: 20
+      time_range: No filter
+  - chart_name: Run Details Table
+    viz_type: table
+    dataset: LangSmith Runs
+    params:
+      all_columns:
+        - run_id
+        - name
+        - status
+        - run_type
+        - latency_s
+        - start_time
+      order_by_cols: []
+      page_length: 20
+      time_range: No filter
+
+dashboards:
+  - dashboard_title: LangSmith Monitoring Dashboard
+    charts:
+      - LangSmith Runs Over Time
+      - Average Latency by Run Type
+      - Run Latency Distribution
+      - Run Details Table
+    position:
+      CHART-LangSmith Runs Over Time: {"col": 0, "row": 0, "size_x": 6, "size_y": 4}
+      CHART-Average Latency by Run Type: {"col": 6, "row": 0, "size_x": 6, "size_y": 4}
+      CHART-Run Latency Distribution: {"col": 0, "row": 4, "size_x": 6, "size_y": 4}
+      CHART-Run Details Table: {"col": 6, "row": 4, "size_x": 6, "size_y": 4}
